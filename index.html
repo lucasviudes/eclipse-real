@@ -81,7 +81,7 @@ textarea{width:100%;min-height:130px;font-family:ui-monospace,Consolas,monospace
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
 th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-th{font-family:var(--display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);cursor:pointer;user-select:none;position:sticky;top:0}
+th{white-space:normal;vertical-align:bottom;font-family:var(--display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);cursor:pointer;user-select:none;position:sticky;top:0}
 th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
 tbody tr:hover{background:rgba(47,124,255,.06)}
 tbody tr:last-child td{border-bottom:0}
@@ -405,17 +405,15 @@ function renderRanking(){
     return {...m, rp:rankP.get(keyOf(m.nome)), rd:rankD.get(keyOf(m.nome)), sp:t.p?m.pontos/t.p*100:0, sd:t.d?m.doacao/t.d*100:0,
       dp:p?m.pontos-p.pontos:null, dd:p?m.doacao-p.doacao:null, novo:pm&&!p}; });
   sortableTable($('#rkTable'),[
-    {key:'rp',label:'#P',num:true,cls:'rk',html:r=>r.rp+'º'},
+    {key:'rp',label:'Ranking Pontuação',num:true,cls:'rk',html:r=>r.rp+'º'},
     {key:'nome',label:'Membro',html:r=>esc(r.nome)+(r.novo?' <span class="chip new">novo</span>':'')},
     {key:'cargo',label:'Cargo',html:r=>`<span class="muted">${esc(cargoLabel(r.cargo))}</span>`,sort:r=>cargoOrder(r.cargo)},
     {key:'level',label:'Level',num:true,html:r=>r.level?fmt(r.level):'<span class="muted">—</span>'},
     {key:'pontos',label:'Pontos',num:true,html:r=>fmt(r.pontos)},
-    {key:'dp',label:'vs anterior',num:true,html:r=>r.dp==null?'<span class="muted">—</span>':dHtml(r.dp,null)},
-    {key:'sp',label:'% guild',num:true,html:r=>r.sp.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'},
-    {key:'rd',label:'#D',num:true,cls:'rk',html:r=>r.rd+'º'},
+    {key:'dp',label:'Comparado à semana anterior',num:true,html:r=>r.dp==null?'<span class="muted">—</span>':dHtml(r.dp,null)},
+    {key:'rd',label:'Ranking Doação',num:true,cls:'rk',html:r=>r.rd+'º'},
     {key:'doacao',label:'Doação',num:true,html:r=>fmt(r.doacao)},
-    {key:'dd',label:'vs anterior',num:true,html:r=>r.dd==null?'<span class="muted">—</span>':dHtml(r.dd,null,true)},
-    {key:'sd',label:'% guild',num:true,html:r=>r.sd.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'},
+    {key:'dd',label:'Comparado à semana anterior',num:true,html:r=>r.dd==null?'<span class="muted">—</span>':dHtml(r.dd,null,true)},
   ], rows, rkState);
   const zeros=w.members.filter(m=>!m.pontos&&!m.doacao).sort((a,b)=>(b.level||0)-(a.level||0));
   $('#zeroPanel').hidden=!zeros.length;
