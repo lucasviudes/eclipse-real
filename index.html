@@ -114,19 +114,16 @@ pre.code{background:var(--surface-2);border:1px solid var(--line);border-radius:
 .small{font-size:13px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-/* Botão lateral do Discord */
-.discord{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:20;display:flex;align-items:center;gap:10px;
-  padding:12px 14px 12px 14px;padding-right:max(14px,env(safe-area-inset-right,0px));background:#5865F2;color:#fff;text-decoration:none;
-  border-radius:12px 0 0 12px;box-shadow:0 6px 24px rgba(88,101,242,.45);font-family:var(--display);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;
-  transition:padding .15s,filter .15s}
-.discord img{width:24px;height:24px;flex:none;border-radius:6px;display:block}
-.discord:hover{filter:brightness(1.1);padding-left:18px}
-.discord:focus-visible{outline:2px solid #fff;outline-offset:-4px}
-@media (max-width:760px){
-  .discord{top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:max(16px,env(safe-area-inset-right,0px));transform:none;
-    border-radius:999px;padding:12px 16px}
-  .wrap{padding-bottom:90px}
-}
+/* Botão do Discord: canto inferior direito, ícone grande em cima do texto */
+.discord{position:fixed;z-index:20;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 14px;background:#5865F2;color:#fff;text-decoration:none;
+  border-radius:14px;box-shadow:0 8px 28px rgba(88,101,242,.45);font-family:var(--display);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;
+  transition:transform .15s,filter .15s}
+.discord img{width:72px;height:72px;flex:none;border-radius:10px;display:block}
+.discord:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.discord:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.wrap{padding-bottom:150px}
+@media (prefers-reduced-motion:reduce){.discord:hover{transform:none}}
 </style>
 </head>
 <body>
@@ -237,7 +234,7 @@ pre.code{background:var(--surface-2);border:1px solid var(--line);border-radius:
 </div>
 
 <a class="discord" href="https://discord.gg/wQgF9Jspz" target="_blank" rel="noopener" aria-label="Entrar no Discord da guild Eclipse Real">
-  <img src="data:image/png;base64,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" alt="" width="24" height="24">
+  <img src="data:image/webp;base64,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" alt="" width="72" height="72">
   <span>Discord da guild</span>
 </a>
 
@@ -410,10 +407,10 @@ function renderRanking(){
     {key:'cargo',label:'Cargo',html:r=>`<span class="muted">${esc(cargoLabel(r.cargo))}</span>`,sort:r=>cargoOrder(r.cargo)},
     {key:'level',label:'Level',num:true,html:r=>r.level?fmt(r.level):'<span class="muted">—</span>'},
     {key:'pontos',label:'Pontos',num:true,html:r=>fmt(r.pontos)},
-    {key:'dp',label:'Comparado à semana anterior',num:true,html:r=>r.dp==null?'<span class="muted">—</span>':dHtml(r.dp,null)},
+    {key:'dp',label:'Evolução',num:true,html:r=>r.dp==null?'<span class="muted">—</span>':dHtml(r.dp,null)},
     {key:'rd',label:'Ranking Doação',num:true,cls:'rk',html:r=>r.rd+'º'},
     {key:'doacao',label:'Doação',num:true,html:r=>fmt(r.doacao)},
-    {key:'dd',label:'Comparado à semana anterior',num:true,html:r=>r.dd==null?'<span class="muted">—</span>':dHtml(r.dd,null,true)},
+    {key:'dd',label:'Evolução',num:true,html:r=>r.dd==null?'<span class="muted">—</span>':dHtml(r.dd,null,true)},
   ], rows, rkState);
   const zeros=w.members.filter(m=>!m.pontos&&!m.doacao).sort((a,b)=>(b.level||0)-(a.level||0));
   $('#zeroPanel').hidden=!zeros.length;
