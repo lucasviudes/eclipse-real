@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Painel Eclipse Real</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: cabeçalho de guild com logo, abas fixas, painéis em grid que viram 1 coluna no celular. Visual único escuro: preto, azul e branco. */
+:root{
+  --bg:#05070d; --surface:#0b1020; --surface-2:#111a33; --line:#1e2b4f;
+  --fg:#f4f7ff; --muted:#8e9bbd; --blue:#2f7cff; --blue-soft:#7fb0ff; --glow:rgba(47,124,255,.35);
+  --up:#4ade80; --down:#ff6b7a; --flat:#a3aecb; --gold:#ffd166; --silver:#d7e0f0; --bronze:#e0a36b;
+  --display:"Chakra Petch",system-ui,sans-serif; --body:"Barlow",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;
+  background-image:radial-gradient(1200px 500px at 50% -200px,rgba(47,124,255,.18),transparent 70%);min-height:100vh}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+header.top img{width:84px;height:84px;filter:drop-shadow(0 0 18px var(--glow))}
+.brand{flex:1;min-width:200px}
+.eyebrow{font-family:var(--display);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue-soft)}
+h1{font-family:var(--display);font-size:clamp(28px,5vw,44px);line-height:1;margin:4px 0 6px;letter-spacing:.02em;text-wrap:balance}
+h1 span{color:var(--blue)}
+.sub{color:var(--muted);margin:0}
+h2{font-family:var(--display);font-size:20px;margin:0 0 4px;letter-spacing:.03em}
+h3{font-family:var(--display);font-size:15px;margin:0 0 10px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-soft)}
+.weekpill{font-family:var(--display);border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:8px;color:var(--muted);font-size:13px}
+.weekpill b{color:var(--fg)}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(5,7,13,.92);backdrop-filter:blur(8px);
+  display:flex;gap:4px;margin:20px 0 22px;border-bottom:1px solid var(--line);overflow-x:auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.tabs button{font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;background:none;border:0;color:var(--muted);
+  padding:12px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--blue)}
+nav.tabs button:hover{color:var(--fg)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.banner{border:1px dashed var(--blue);background:rgba(47,124,255,.08);padding:12px 16px;border-radius:10px;margin-bottom:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.banner p{margin:0;flex:1;min-width:220px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+@media (max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
+
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px}
+.stat .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--display);font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .d{font-size:13px;font-variant-numeric:tabular-nums}
+
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+select,input[type=date],input[type=text],textarea{background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:14px}
+textarea{width:100%;min-height:130px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.btn{font-family:var(--display);font-weight:600;letter-spacing:.05em;text-transform:uppercase;font-size:13px;border-radius:8px;padding:9px 14px;cursor:pointer;border:1px solid var(--blue);background:var(--blue);color:#fff}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent;color:var(--blue-soft);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--blue);color:var(--fg)}
+.btn.danger{background:transparent;color:var(--down);border-color:rgba(255,107,122,.4)}
+
+/* Pódio */
+.podium{display:flex;flex-direction:column;gap:8px}
+.pod{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.pod .pos{font-family:var(--display);font-weight:700;font-size:18px;text-align:center}
+.pod.p1{border-color:var(--gold)} .pod.p1 .pos{color:var(--gold)}
+.pod.p2 .pos{color:var(--silver)} .pod.p3 .pos{color:var(--bronze)}
+.pod .name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod .val{font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums}
+.bar{height:4px;background:var(--line);border-radius:4px;margin-top:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue)}
+
+/* Tabelas */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-family:var(--display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);cursor:pointer;user-select:none;position:sticky;top:0}
+th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:rgba(47,124,255,.06)}
+tbody tr:last-child td{border-bottom:0}
+td.rk{font-family:var(--display);font-weight:700;color:var(--blue-soft);width:44px}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--flat)}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid currentColor}
+.chip.up{background:rgba(74,222,128,.08)} .chip.down{background:rgba(255,107,122,.08)} .chip.flat{background:rgba(163,174,203,.06)}
+.chip.new{color:var(--blue-soft);background:rgba(47,124,255,.1)}
+.chip.gone{color:var(--muted)}
+
+.hl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.hl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.hl{grid-template-columns:1fr}}
+.hl .stat .v{font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-family:var(--body);font-size:11px}
+.legend{display:flex;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;transition:border-color .15s,background .15s}
+.drop.over,.drop:hover{border-color:var(--blue);background:rgba(47,124,255,.06);color:var(--fg)}
+.drop strong{display:block;font-family:var(--display);font-size:17px;color:var(--fg);margin-bottom:2px}
+pre.code{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12.5px;overflow-x:auto;margin:0;color:var(--blue-soft)}
+.msg{font-size:14px;padding:10px 12px;border-radius:8px;margin-top:10px}
+.msg.ok{background:rgba(74,222,128,.08);color:var(--up);border:1px solid rgba(74,222,128,.3)}
+.msg.err{background:rgba(255,107,122,.08);color:var(--down);border:1px solid rgba(255,107,122,.3)}
+.empty{color:var(--muted);text-align:center;padding:30px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <img src="data:image/webp;base64,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" alt="PKA">
+    <div class="brand">
+      <div class="eyebrow">PokeTibia PKA · Guild</div>
+      <h1>Eclipse <span>Real</span></h1>
+      <p class="sub">Ranking semanal de pontos e doações da guild</p>
+    </div>
+    <div class="weekpill" id="weekInfo"></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="ranking" aria-selected="true">Ranking</button>
+    <button role="tab" data-tab="comparar" aria-selected="false">Comparar semanas</button>
+    <button role="tab" data-tab="evolucao" aria-selected="false">Evolução</button>
+    <button role="tab" data-tab="historico" aria-selected="false">Histórico</button>
+    <button role="tab" data-tab="semanas" aria-selected="false">Semanas</button>
+  </nav>
+
+  <div id="statusBanner" class="banner"><p id="statusText">Carregando as semanas da guild…</p></div>
+
+  <!-- RANKING -->
+  <section id="tab-ranking" class="stack">
+    <div class="row">
+      <label class="f">Semana<select id="rkWeek"></select></label>
+      <div class="spacer"></div>
+    </div>
+    <div class="grid3" id="rkStats"></div>
+    <div class="grid2">
+      <div class="panel"><h3>Top pontuação</h3><div class="podium" id="podPts"></div></div>
+      <div class="panel"><h3>Top doação</h3><div class="podium" id="podDon"></div></div>
+    </div>
+    <div class="panel">
+      <div class="row" style="margin-bottom:12px"><h3 style="margin:0">Todos os membros</h3><div class="spacer"></div>
+        <input type="text" id="rkSearch" placeholder="Buscar membro"></div>
+      <div class="tw"><table id="rkTable"></table></div>
+    </div>
+    <div class="panel" id="zeroPanel">
+      <h3>Sem pontos e sem doação na semana</h3>
+      <p class="muted small" style="margin:-4px 0 12px">Membros que fecharam a semana zerados nos dois quesitos.</p>
+      <div class="tw"><table id="zeroTable"></table></div>
+    </div>
+  </section>
+
+  <!-- COMPARAR -->
+  <section id="tab-comparar" class="stack" hidden>
+    <div class="row">
+      <label class="f">Semana base<select id="cmpA"></select></label>
+      <label class="f">Comparar com<select id="cmpB"></select></label>
+      <label class="f">Mostrar<select id="cmpFilter">
+        <option value="all">Todos</option><option value="up">Só quem melhorou</option><option value="down">Só quem piorou</option><option value="new">Novos</option><option value="gone">Não participaram</option>
+      </select></label>
+    </div>
+    <div class="grid3" id="cmpStats"></div>
+    <div class="hl" id="cmpHl"></div>
+    <div class="panel">
+      <h3>Membro a membro</h3>
+      <p class="muted small" style="margin:-4px 0 12px">Clique no cabeçalho para ordenar. Variação = semana comparada menos semana base.</p>
+      <div class="tw"><table id="cmpTable"></table></div>
+    </div>
+  </section>
+
+  <!-- EVOLUÇÃO -->
+  <section id="tab-evolucao" class="stack" hidden>
+    <div class="row"><label class="f">Membro<select id="evMember"></select></label></div>
+    <div class="grid2">
+      <div class="panel"><h3>Pontos por semana</h3><div id="evPts"></div></div>
+      <div class="panel"><h3>Doação por semana</h3><div id="evDon"></div></div>
+    </div>
+    <div class="panel"><h3>Semana a semana</h3><div class="tw"><table id="evTable"></table></div></div>
+  </section>
+
+  <!-- HISTÓRICO -->
+  <section id="tab-historico" class="stack" hidden>
+    <div class="panel">
+      <h3>Quem mais doou e pontuou em cada semana</h3>
+      <div class="tw"><table id="hsTable"></table></div>
+    </div>
+    <div class="panel">
+      <h3>Ranking acumulado</h3>
+      <p class="muted small" style="margin:-4px 0 12px">Soma de todas as semanas importadas.</p>
+      <div class="tw"><table id="accTable"></table></div>
+    </div>
+  </section>
+
+  <!-- SEMANAS -->
+  <section id="tab-semanas" class="stack" hidden>
+    <div class="panel">
+      <div class="row" style="margin-bottom:12px"><h3 style="margin:0">Semanas carregadas</h3><div class="spacer"></div>
+        <a class="btn ghost" id="repoLink" href="#" target="_blank" rel="noopener" hidden>Abrir pasta no GitHub</a></div>
+      <div class="tw"><table id="wkTable"></table></div>
+    </div>
+    <div class="panel">
+      <h3>Como atualizar (só o líder)</h3>
+      <ol class="small" style="margin:0;padding-left:20px;line-height:1.8">
+        <li>Exporte a lista de membros da guild no jogo (arquivo <code>.json</code>).</li>
+        <li>No GitHub, abra a pasta <code>dados</code> do repositório e clique em <b>Add file → Upload files</b>.</li>
+        <li>Arraste o arquivo, sem renomear, e clique em <b>Commit changes</b>.</li>
+        <li>Em 1 a 2 minutos a semana aparece aqui. A data vem do campo <code>exportedAt</code> do arquivo.</li>
+      </ol>
+      <p class="muted small" style="margin:12px 0 0">Se subir dois arquivos da mesma data, vale a exportação mais recente. Para apagar uma semana, apague o arquivo da pasta <code>dados</code>.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const fmt = n => (n ?? 0).toLocaleString('pt-BR');
+const fmtShort = n => { const a=Math.abs(n); if(a>=1e6) return (n/1e6).toLocaleString('pt-BR',{maximumFractionDigits:2})+'kk'; if(a>=1e3) return (n/1e3).toLocaleString('pt-BR',{maximumFractionDigits:1})+'k'; return fmt(n); };
+const fmtDate = id => { const [y,m,d]=id.split('-'); return `${d}/${m}/${y}`; };
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const keyOf = n => String(n).trim().toLowerCase();
+
+// ---------- Configuração do GitHub ----------
+// Deixe vazio para detectar sozinho pelo endereço do GitHub Pages (usuario.github.io/repositorio).
+const GH_OWNER = '';
+const GH_REPO  = '';
+const GH_BRANCH = '';      // vazio = branch padrão do repositório
+const DATA_DIR = 'dados';
+const CACHE_MIN = 5;       // minutos que a lista de arquivos fica em cache (economiza o limite da API)
+
+let weeks = [];
+let files = [];
+function ghTarget(){
+  let owner=GH_OWNER, repo=GH_REPO;
+  const h=location.hostname;
+  if((!owner||!repo) && h.endsWith('.github.io')){
+    owner = owner || h.split('.')[0];
+    const seg = location.pathname.split('/').filter(Boolean)[0];
+    repo = repo || (seg && !seg.includes('.') ? seg : h);
+  }
+  return owner&&repo ? {owner,repo} : null;
+}
+async function listFiles(t){
+  const ck='eclipseReal.files.'+t.owner+'/'+t.repo;
+  try{ const c=JSON.parse(localStorage.getItem(ck)||'null'); if(c && Date.now()-c.at < CACHE_MIN*60000) return c.list; }catch(e){}
+  const url=`https://api.github.com/repos/${t.owner}/${t.repo}/contents/${DATA_DIR}${GH_BRANCH?'?ref='+GH_BRANCH:''}`;
+  const r=await fetch(url,{headers:{Accept:'application/vnd.github+json'}});
+  if(r.status===404) throw new Error(`Não achei a pasta "${DATA_DIR}" no repositório ${t.owner}/${t.repo}.`);
+  if(r.status===403||r.status===429) throw new Error('O GitHub limitou as consultas deste IP por alguns minutos (limite de 60 por hora). Tente de novo daqui a pouco.');
+  if(!r.ok) throw new Error('Falha ao consultar o GitHub ('+r.status+').');
+  const list=(await r.json()).filter(f=>f.type==='file'&&/\.json$/i.test(f.name)).map(f=>({name:f.name,path:f.path,html:f.html_url}));
+  try{ localStorage.setItem(ck,JSON.stringify({at:Date.now(),list})); }catch(e){}
+  return list;
+}
+async function loadAll(){
+  const t=ghTarget();
+  if(!t) throw new Error('Não consegui identificar o repositório. Publique pelo GitHub Pages ou preencha GH_OWNER e GH_REPO no início do script.');
+  $('#repoLink').href=`https://github.com/${t.owner}/${t.repo}/tree/${GH_BRANCH||'HEAD'}/${DATA_DIR}`; $('#repoLink').hidden=false;
+  const list=await listFiles(t);
+  const loaded=await Promise.all(list.map(async f=>{
+    try{
+      const r=await fetch(DATA_DIR+'/'+encodeURIComponent(f.name),{cache:'no-cache'});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const data=await r.json(); const p=parseWeek(data);
+      let id=p.id; if(!id){ const m=f.name.match(/(\d{4})-(\d{2})-(\d{2})/); if(m) id=`${m[1]}-${m[2]}-${m[3]}`; }
+      if(!id) throw new Error('sem data (exportedAt)');
+      return {ok:true,id,members:p.members,file:f,stamp:String(data.exportedAt||f.name)};
+    }catch(e){ return {ok:false,file:f,err:e.message}; }
+  }));
+  const byWeek=new Map();
+  loaded.filter(x=>x.ok).sort((a,b)=>a.stamp.localeCompare(b.stamp)).forEach(x=>byWeek.set(x.id,x)); // mais recente vence
+  weeks=[...byWeek.values()].map(x=>({id:x.id,members:x.members,file:x.file}));
+  sortWeeks();
+  files=loaded;
+}
+function sortWeeks(){ weeks.sort((a,b)=>a.id.localeCompare(b.id)); }
+
+// ---------- Parser ----------
+const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+const NAME_K = ['nome','name','membro','member','player','jogador','nick','personagem','char','character'];
+const PTS_K  = ['pontos','ponto','points','point','pontuacao','score','pts'];
+const DON_K  = ['doacao','doacoes','donation','donations','donate','contribuicao','contribuicoes','contribution','doado','doou'];
+function pick(o, keys){ for(const k of Object.keys(o)){ if(keys.includes(norm(k))) return o[k]; } return undefined; }
+function parseNum(v){
+  if(v==null||v==='') return 0;
+  if(typeof v==='number') return isFinite(v)?v:0;
+  let s=String(v).trim().toLowerCase().replace(/\s|\$|r\$/g,'');
+  const m=s.match(/^(-?[\d.,]+)(k*)$/); if(!m) return NaN;
+  let n=m[1];
+  if(/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(n)) n=n.replace(/\./g,'').replace(',','.');
+  else if(/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(n)) n=n.replace(/,/g,'');
+  else n=n.replace(',','.');
+  const x=parseFloat(n); if(isNaN(x)) return NaN;
+  return Math.round(x*Math.pow(1000,m[2].length));
+}
+function parseWeek(data){
+  let list=null, semana=null;
+  if(Array.isArray(data)) list=data;
+  else if(data && typeof data==='object'){
+    semana = data.semana||data.week||data.data||data.date||data.exportedAt||data.exported_at||null;
+    list = data.membros||data.members||data.jogadores||data.players||data.ranking||null;
+    if(!list){ // formato mapa { "Nome": {pontos, doacao} }
+      const vals=Object.entries(data).filter(([k,v])=>v&&typeof v==='object'&&!Array.isArray(v));
+      if(vals.length) list=vals.map(([k,v])=>({nome:k,...v}));
+    }
+  }
+  if(!Array.isArray(list)||!list.length) throw new Error('Não encontrei a lista de membros. Use uma lista [ ... ] ou um objeto com "membros": [ ... ].');
+  const map=new Map(); const bad=[];
+  list.forEach((o,i)=>{
+    if(!o||typeof o!=='object'){ bad.push(i+1); return; }
+    const nome=pick(o,NAME_K); if(!nome||!String(nome).trim()){ bad.push(i+1); return; }
+    const pontos=parseNum(pick(o,PTS_K)), doacao=parseNum(pick(o,DON_K));
+    if(isNaN(pontos)||isNaN(doacao)){ bad.push(i+1); return; }
+    const k=keyOf(nome);
+    if(map.has(k)){ const e=map.get(k); e.pontos+=pontos; e.doacao+=doacao; }
+    else map.set(k,{nome:String(nome).trim(),pontos,doacao,
+      cargo:o.rank?String(o.rank):(o.cargo?String(o.cargo):''), level:parseInt(o.level??o.nivel)||null,
+      status:o.status?String(o.status):'', lastLogin:o.lastLogin?String(o.lastLogin):''});
+  });
+  if(!map.size) throw new Error('Nenhum membro válido. Cada item precisa de nome, pontos e doação.');
+  let id=null;
+  if(semana){ const s=String(semana).trim(); let m;
+    if((m=s.match(/^(\d{4})-(\d{2})-(\d{2})/))) id=`${m[1]}-${m[2]}-${m[3]}`;
+    else if((m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/))) id=`${m[3]}-${m[2]}-${m[1]}`; }
+  return {id, members:[...map.values()], bad, guild:data&&!Array.isArray(data)?(data.guild||null):null};
+}
+// ---------- Helpers ----------
+const getWeek = id => weeks.find(w=>w.id===id);
+const totals = w => w.members.reduce((a,m)=>({p:a.p+m.pontos,d:a.d+m.doacao}),{p:0,d:0});
+function delta(a,b){ const d=b-a; const pct = a? d/a*100 : (b? null : 0); return {d,pct}; }
+function dHtml(d,pct,short){ const cls=d>0?'up':d<0?'down':'flat'; const sign=d>0?'+':''; const v=short?fmtShort(d):fmt(d);
+  const p = pct==null? '' : ` <span class="small">(${sign}${pct.toLocaleString('pt-BR',{maximumFractionDigits:1})}%)</span>`;
+  return `<span class="${cls}">${d>0?'▲':d<0?'▼':'■'} ${sign}${v}${p}</span>`; }
+function weekOptions(sel, selected){ sel.innerHTML = weeks.slice().reverse().map(w=>`<option value="${w.id}" ${w.id===selected?'selected':''}>Semana ${fmtDate(w.id)}</option>`).join(''); }
+function statCard(k,v,d){ return `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div>${d?`<div class="d">${d}</div>`:''}</div>`; }
+
+// tabelas ordenáveis
+function sortableTable(el, cols, rows, state){
+  const render=()=>{
+    const c=cols.find(x=>x.key===state.key);
+    const sorted=rows.slice().sort((a,b)=>{ const va=c.sort?c.sort(a):a[c.key], vb=c.sort?c.sort(b):b[c.key];
+      const r = typeof va==='string'? va.localeCompare(vb,'pt-BR') : (va??-Infinity)-(vb??-Infinity); return state.dir*r; });
+    el.innerHTML = `<thead><tr>${cols.map(c=>`<th class="${c.num?'num':''}" data-k="${c.key}">${c.label}${state.key===c.key?(state.dir<0?' ↓':' ↑'):''}</th>`).join('')}</tr></thead>
+      <tbody>${sorted.length? sorted.map((r,i)=>`<tr>${cols.map(c=>`<td class="${c.num?'num':''} ${c.cls||''}">${c.html?c.html(r,i):esc(r[c.key])}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${cols.length}" class="empty">Nenhum membro para mostrar.</td></tr>`}</tbody>`;
+    el.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(k==='_rk') return; state.dir = state.key===k? -state.dir : -1; state.key=k; render(); });
+  };
+  render();
+}
+
+function cargoLabel(c){ if(!c) return '—'; const n=norm(c);
+  if(n.includes('viceleader')) return 'Vice-líder'; if(n.includes('leader')) return 'Líder'; if(n.includes('member')) return 'Membro';
+  return String(c).replace(/^(a|an|the)\s+/i,''); }
+function cargoOrder(c){ const n=norm(c||''); return n.includes('viceleader')?2:n.includes('leader')?1:n.includes('member')?3:4; }
+
+// ---------- Ranking ----------
+const rkState={key:'pontos',dir:-1};
+function renderRanking(){
+  const sel=$('#rkWeek'); const cur=sel.value||weeks.at(-1)?.id; weekOptions(sel,cur);
+  const w=getWeek(sel.value); if(!w) return;
+  const idx=weeks.indexOf(w), prev=weeks[idx-1];
+  const t=totals(w), tp=prev?totals(prev):null;
+  const active=w.members.filter(m=>m.pontos>0||m.doacao>0).length;
+  $('#rkStats').innerHTML =
+    statCard('Pontos da guild', fmt(t.p), tp?dHtml(t.p-tp.p, delta(tp.p,t.p).pct)+' <span class="muted">vs semana anterior</span>':'<span class="muted">primeira semana importada</span>') +
+    statCard('Doação total', fmtShort(t.d), tp?dHtml(t.d-tp.d, delta(tp.d,t.d).pct, true)+' <span class="muted">vs semana anterior</span>':'<span class="muted">'+fmt(t.d)+'</span>') +
+    statCard('Membros ativos', `${active}<span class="muted" style="font-size:16px"> / ${w.members.length}</span>`, '<span class="muted">com pontos ou doação na semana</span>');
+  const pod=(key,el,short)=>{ const top=w.members.slice().sort((a,b)=>b[key]-a[key]).slice(0,5); const max=top[0]?.[key]||1;
+    el.innerHTML = top.map((m,i)=>`<div class="pod p${i+1}"><div class="pos">${i+1}º</div><div style="min-width:0"><div class="name">${esc(m.nome)}</div><div class="bar"><i style="width:${Math.max(2,m[key]/max*100)}%"></i></div></div><div class="val">${short?fmtShort(m[key]):fmt(m[key])}</div></div>`).join(''); };
+  pod('pontos',$('#podPts')); pod('doacao',$('#podDon'),true);
+  const q=keyOf($('#rkSearch').value);
+  const rankP=new Map(w.members.slice().sort((a,b)=>b.pontos-a.pontos).map((m,i)=>[keyOf(m.nome),i+1]));
+  const rankD=new Map(w.members.slice().sort((a,b)=>b.doacao-a.doacao).map((m,i)=>[keyOf(m.nome),i+1]));
+  const pm=prev? new Map(prev.members.map(m=>[keyOf(m.nome),m])) : null;
+  const rows=w.members.filter(m=>!q||keyOf(m.nome).includes(q)).map(m=>{ const p=pm?.get(keyOf(m.nome));
+    return {...m, rp:rankP.get(keyOf(m.nome)), rd:rankD.get(keyOf(m.nome)), sp:t.p?m.pontos/t.p*100:0, sd:t.d?m.doacao/t.d*100:0,
+      dp:p?m.pontos-p.pontos:null, dd:p?m.doacao-p.doacao:null, novo:pm&&!p}; });
+  sortableTable($('#rkTable'),[
+    {key:'rp',label:'#P',num:true,cls:'rk',html:r=>r.rp+'º'},
+    {key:'nome',label:'Membro',html:r=>esc(r.nome)+(r.novo?' <span class="chip new">novo</span>':'')},
+    {key:'cargo',label:'Cargo',html:r=>`<span class="muted">${esc(cargoLabel(r.cargo))}</span>`,sort:r=>cargoOrder(r.cargo)},
+    {key:'level',label:'Level',num:true,html:r=>r.level?fmt(r.level):'<span class="muted">—</span>'},
+    {key:'pontos',label:'Pontos',num:true,html:r=>fmt(r.pontos)},
+    {key:'dp',label:'vs anterior',num:true,html:r=>r.dp==null?'<span class="muted">—</span>':dHtml(r.dp,null)},
+    {key:'sp',label:'% guild',num:true,html:r=>r.sp.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'},
+    {key:'rd',label:'#D',num:true,cls:'rk',html:r=>r.rd+'º'},
+    {key:'doacao',label:'Doação',num:true,html:r=>fmt(r.doacao)},
+    {key:'dd',label:'vs anterior',num:true,html:r=>r.dd==null?'<span class="muted">—</span>':dHtml(r.dd,null,true)},
+    {key:'sd',label:'% guild',num:true,html:r=>r.sd.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'},
+  ], rows, rkState);
+  const zeros=w.members.filter(m=>!m.pontos&&!m.doacao).sort((a,b)=>(b.level||0)-(a.level||0));
+  $('#zeroPanel').hidden=!zeros.length;
+  $('#zeroTable').innerHTML=`<thead><tr><th>Membro</th><th>Cargo</th><th class="num">Level</th><th>Último login</th></tr></thead><tbody>`+
+    zeros.map(m=>`<tr><td>${esc(m.nome)}</td><td class="muted">${esc(cargoLabel(m.cargo))}</td><td class="num">${m.level?fmt(m.level):'—'}</td>
+      <td>${m.status==='online'?'<span class="chip up">online na exportação</span>':(m.lastLogin?esc(m.lastLogin):'<span class="muted">—</span>')}</td></tr>`).join('')+'</tbody>';
+}
+
+// ---------- Comparar ----------
+const cmpState={key:'dp',dir:-1};
+function chip(s){ return {up:'<span class="chip up">melhorou</span>',down:'<span class="chip down">piorou</span>',flat:'<span class="chip flat">estável</span>',mix:'<span class="chip flat">misto</span>',new:'<span class="chip new">novo</span>',gone:'<span class="chip gone">não participou</span>'}[s]; }
+function renderCompare(){
+  const A=$('#cmpA'), B=$('#cmpB');
+  if(weeks.length<2){
+    $('#cmpStats').innerHTML=''; $('#cmpHl').innerHTML='';
+    $('#cmpTable').innerHTML=`<tbody><tr><td class="empty">Importe pelo menos duas semanas para comparar. Hoje há ${weeks.length}.</td></tr></tbody>`;
+    weekOptions(A,weeks[0]?.id); weekOptions(B,weeks[0]?.id); return;
+  }
+  const a0=A.value||weeks.at(-2).id, b0=B.value||weeks.at(-1).id; weekOptions(A,a0); weekOptions(B,b0);
+  const wa=getWeek(A.value), wb=getWeek(B.value);
+  const ma=new Map(wa.members.map(m=>[keyOf(m.nome),m])), mb=new Map(wb.members.map(m=>[keyOf(m.nome),m]));
+  const keys=new Set([...ma.keys(),...mb.keys()]);
+  const rows=[...keys].map(k=>{ const a=ma.get(k), b=mb.get(k);
+    const pa=a?.pontos??0, pb=b?.pontos??0, da=a?.doacao??0, db=b?.doacao??0;
+    let st; if(!a) st='new'; else if(!b) st='gone'; else { const s1=Math.sign(pb-pa), s2=Math.sign(db-da);
+      st = (s1>=0&&s2>=0&&(s1+s2)>0)?'up' : (s1<=0&&s2<=0&&(s1+s2)<0)?'down' : (s1===0&&s2===0)?'flat':'mix'; }
+    return {nome:(b||a).nome, pa,pb,dp:pb-pa,pp:a&&pa?(pb-pa)/pa*100:null, da,db,dd:db-da,pd:a&&da?(db-da)/da*100:null, st};
+  });
+  const ta=totals(wa), tb=totals(wb);
+  const ups=rows.filter(r=>r.st==='up').length, downs=rows.filter(r=>r.st==='down').length;
+  $('#cmpStats').innerHTML =
+    statCard('Pontos da guild', `${fmt(ta.p)} → ${fmt(tb.p)}`, dHtml(tb.p-ta.p, delta(ta.p,tb.p).pct)) +
+    statCard('Doação total', `${fmtShort(ta.d)} → ${fmtShort(tb.d)}`, dHtml(tb.d-ta.d, delta(ta.d,tb.d).pct, true)) +
+    statCard('Rendimento dos membros', `<span class="up">${ups}</span> <span class="muted" style="font-size:16px">melhoraram</span> · <span class="down">${downs}</span> <span class="muted" style="font-size:16px">pioraram</span>`, '<span class="muted">nos dois quesitos ao mesmo tempo</span>');
+  const both=rows.filter(r=>r.st!=='new'&&r.st!=='gone');
+  const best=(arr,k,dir)=>arr.length? arr.slice().sort((x,y)=>dir*(y[k]-x[k]))[0] : null;
+  const hp=best(both,'dp',1), hd=best(both,'dd',1), lp=best(both,'dp',-1), ld=best(both,'dd',-1);
+  const hl=(t,r,k,short)=> statCard(t, r?esc(r.nome):'—', r?dHtml(r[k],null,short):'');
+  $('#cmpHl').innerHTML = hl('Mais subiu em pontos',hp&&hp.dp>0?hp:null,'dp') + hl('Mais subiu em doação',hd&&hd.dd>0?hd:null,'dd',true)
+    + hl('Mais caiu em pontos',lp&&lp.dp<0?lp:null,'dp') + hl('Mais caiu em doação',ld&&ld.dd<0?ld:null,'dd',true);
+  const f=$('#cmpFilter').value;
+  const shown=rows.filter(r=> f==='all' || r.st===f);
+  const pct=v=>v==null?'<span class="muted">—</span>':`<span class="${v>0?'up':v<0?'down':'flat'}">${v>0?'+':''}${v.toLocaleString('pt-BR',{maximumFractionDigits:1})}%</span>`;
+  sortableTable($('#cmpTable'),[
+    {key:'nome',label:'Membro'},
+    {key:'st',label:'Situação',html:r=>chip(r.st)},
+    {key:'pa',label:'Pontos base',num:true,html:r=>fmt(r.pa)},
+    {key:'pb',label:'Pontos',num:true,html:r=>fmt(r.pb)},
+    {key:'dp',label:'Δ Pontos',num:true,html:r=>dHtml(r.dp,null)},
+    {key:'pp',label:'%',num:true,html:r=>pct(r.pp)},
+    {key:'da',label:'Doação base',num:true,html:r=>fmtShort(r.da)},
+    {key:'db',label:'Doação',num:true,html:r=>fmtShort(r.db)},
+    {key:'dd',label:'Δ Doação',num:true,html:r=>dHtml(r.dd,null,true)},
+    {key:'pd',label:'%',num:true,html:r=>pct(r.pd)},
+  ], shown, cmpState);
+}
+
+// ---------- Evolução ----------
+function lineChart(points, color, short){
+  if(!points.length) return '<div class="empty">Sem dados.</div>';
+  const W=520,H=220,L=56,R=14,T=16,B=34; const iw=W-L-R, ih=H-T-B;
+  const max=Math.max(1,...points.map(p=>p.v)); const nice=niceMax(max);
+  const x=i=> L + (points.length===1? iw/2 : i*iw/(points.length-1));
+  const y=v=> T + ih - v/nice*ih;
+  let g=''; for(let i=0;i<=4;i++){ const v=nice*i/4; g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmtShort(v)}</text>`; }
+  const path=points.map((p,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
+  const area=points.length>1?`<path d="${path}L${x(points.length-1)},${y(0)}L${x(0)},${y(0)}Z" fill="${color}" opacity=".12"/>`:'';
+  const step=Math.ceil(points.length/7);
+  const labels=points.map((p,i)=> (i%step===0||i===points.length-1)?`<text x="${x(i)}" y="${H-12}" text-anchor="middle">${fmtDate(p.id).slice(0,5)}</text>`:'').join('');
+  const dots=points.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.v)}" r="${i===points.length-1?5:3.5}" fill="${i===points.length-1?color:'var(--bg)'}" stroke="${color}" stroke-width="2"><title>${fmtDate(p.id)}: ${fmt(p.v)}</title></circle>`).join('');
+  const last=points.at(-1);
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${g}${area}<path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>${dots}${labels}
+    <text x="${Math.min(x(points.length-1),W-R-4)}" y="${Math.max(y(last.v)-10,12)}" text-anchor="end" style="fill:var(--fg);font-weight:700">${short?fmtShort(last.v):fmt(last.v)}</text></svg>`;
+}
+function niceMax(v){ const e=Math.pow(10,Math.floor(Math.log10(v))); const f=v/e; return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e; }
+function renderEvolution(){
+  const sel=$('#evMember'); const cur=sel.value||'__guild';
+  const names=new Map(); weeks.forEach(w=>w.members.forEach(m=>names.set(keyOf(m.nome),m.nome)));
+  sel.innerHTML=`<option value="__guild">Guild inteira (total)</option>`+[...names.entries()].sort((a,b)=>a[1].localeCompare(b[1],'pt-BR')).map(([k,n])=>`<option value="${esc(k)}" ${k===cur?'selected':''}>${esc(n)}</option>`).join('');
+  if(cur==='__guild') sel.value='__guild';
+  const k=sel.value;
+  const series=weeks.map(w=>{ if(k==='__guild'){ const t=totals(w); return {id:w.id,p:t.p,d:t.d,in:true}; }
+    const m=w.members.find(m=>keyOf(m.nome)===k); return {id:w.id,p:m?.pontos??0,d:m?.doacao??0,in:!!m}; });
+  $('#evPts').innerHTML=lineChart(series.map(s=>({id:s.id,v:s.p})),'var(--blue)');
+  $('#evDon').innerHTML=lineChart(series.map(s=>({id:s.id,v:s.d})),'var(--blue-soft)',true);
+  const rows=series.map((s,i)=>{ const p=series[i-1]; const w=weeks[i];
+    const rp=k==='__guild'?null:(s.in? w.members.slice().sort((a,b)=>b.pontos-a.pontos).findIndex(m=>keyOf(m.nome)===k)+1 : null);
+    const rd=k==='__guild'?null:(s.in? w.members.slice().sort((a,b)=>b.doacao-a.doacao).findIndex(m=>keyOf(m.nome)===k)+1 : null);
+    return {...s,rp,rd,dp:p?s.p-p.p:null,dd:p?s.d-p.d:null}; }).reverse();
+  $('#evTable').innerHTML=`<thead><tr><th>Semana</th><th class="num">Pontos</th><th class="num">Δ</th>${k==='__guild'?'':'<th class="num">Posição</th>'}<th class="num">Doação</th><th class="num">Δ</th>${k==='__guild'?'':'<th class="num">Posição</th>'}</tr></thead><tbody>`+
+    rows.map(r=>`<tr><td>${fmtDate(r.id)}${r.in?'':' <span class="chip gone">não participou</span>'}</td><td class="num">${fmt(r.p)}</td><td class="num">${r.dp==null?'<span class="muted">—</span>':dHtml(r.dp,null)}</td>${k==='__guild'?'':`<td class="num">${r.rp?r.rp+'º':'—'}</td>`}<td class="num">${fmt(r.d)}</td><td class="num">${r.dd==null?'<span class="muted">—</span>':dHtml(r.dd,null,true)}</td>${k==='__guild'?'':`<td class="num">${r.rd?r.rd+'º':'—'}</td>`}</tr>`).join('')+'</tbody>';
+}
+
+// ---------- Histórico ----------
+const accState={key:'d',dir:-1};
+function renderHistory(){
+  const rows=weeks.map((w,i)=>{ const t=totals(w), p=weeks[i-1]?totals(weeks[i-1]):null;
+    const tp=w.members.slice().sort((a,b)=>b.pontos-a.pontos)[0], td=w.members.slice().sort((a,b)=>b.doacao-a.doacao)[0];
+    return {w,t,p,tp,td}; }).reverse();
+  $('#hsTable').innerHTML=`<thead><tr><th>Semana</th><th>Maior doador</th><th class="num">Doou</th><th>Maior pontuador</th><th class="num">Pontos</th><th class="num">Doação guild</th><th class="num">Δ</th><th class="num">Pontos guild</th><th class="num">Δ</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td>${fmtDate(r.w.id)}</td><td><b>${esc(r.td.nome)}</b></td><td class="num">${fmtShort(r.td.doacao)}</td><td><b>${esc(r.tp.nome)}</b></td><td class="num">${fmt(r.tp.pontos)}</td>
+      <td class="num">${fmtShort(r.t.d)}</td><td class="num">${r.p?dHtml(r.t.d-r.p.d,delta(r.p.d,r.t.d).pct,true):'<span class="muted">—</span>'}</td>
+      <td class="num">${fmt(r.t.p)}</td><td class="num">${r.p?dHtml(r.t.p-r.p.p,delta(r.p.p,r.t.p).pct):'<span class="muted">—</span>'}</td></tr>`).join('')+'</tbody>';
+  const acc=new Map(); weeks.forEach(w=>w.members.forEach(m=>{ const k=keyOf(m.nome); const a=acc.get(k)||{nome:m.nome,p:0,d:0,n:0,tops:0}; a.nome=m.nome; a.p+=m.pontos; a.d+=m.doacao; a.n++; acc.set(k,a); }));
+  weeks.forEach(w=>{ const td=w.members.slice().sort((a,b)=>b.doacao-a.doacao)[0]; if(td) acc.get(keyOf(td.nome)).tops++; });
+  sortableTable($('#accTable'),[
+    {key:'nome',label:'Membro'},
+    {key:'p',label:'Pontos total',num:true,html:r=>fmt(r.p)},
+    {key:'mp',label:'Média pontos',num:true,html:r=>fmt(Math.round(r.mp))},
+    {key:'d',label:'Doação total',num:true,html:r=>fmt(r.d)},
+    {key:'md',label:'Média doação',num:true,html:r=>fmtShort(Math.round(r.md))},
+    {key:'n',label:'Semanas',num:true},
+    {key:'tops',label:'Vezes maior doador',num:true},
+  ], [...acc.values()].map(a=>({...a,mp:a.p/a.n,md:a.d/a.n})), accState);
+}
+
+// ---------- Semanas ----------
+function renderWeeksTable(){
+  const used=new Set(weeks.map(w=>w.file?.name));
+  const rows=files.slice().sort((a,b)=>b.file.name.localeCompare(a.file.name));
+  $('#wkTable').innerHTML=`<thead><tr><th>Arquivo</th><th>Semana</th><th class="num">Membros</th><th class="num">Pontos</th><th class="num">Doação</th><th>Situação</th></tr></thead><tbody>`+
+    (rows.length? rows.map(x=>{
+      if(!x.ok) return `<tr><td><a href="${esc(x.file.html)}" target="_blank" rel="noopener" style="color:var(--blue-soft)">${esc(x.file.name)}</a></td><td colspan="4" class="muted">—</td><td><span class="chip down">erro: ${esc(x.err)}</span></td></tr>`;
+      const t=totals(x); const on=used.has(x.file.name);
+      return `<tr><td><a href="${esc(x.file.html)}" target="_blank" rel="noopener" style="color:var(--blue-soft)">${esc(x.file.name)}</a></td><td>${fmtDate(x.id)}</td><td class="num">${x.members.length}</td><td class="num">${fmt(t.p)}</td><td class="num">${fmt(t.d)}</td>
+        <td>${on?'<span class="chip up">em uso</span>':'<span class="chip gone">substituído por exportação mais nova</span>'}</td></tr>`; }).join('')
+     : `<tr><td colspan="6" class="empty">Nenhum arquivo na pasta dados.</td></tr>`)+'</tbody>';
+}
+
+// ---------- Geral ----------
+function renderAll(){
+  const last=weeks.at(-1);
+  $('#weekInfo').innerHTML= last? `Última semana: <b>${fmtDate(last.id)}</b> · ${weeks.length} semana(s)` : 'Nenhuma semana';
+  ['#rkWeek','#cmpA','#cmpB'].forEach(s=>{ if(!getWeek($(s).value)) $(s).value=''; });
+  renderRanking(); renderCompare(); renderEvolution(); renderHistory(); renderWeeksTable();
+}
+function showTab(t){
+  if(!document.getElementById('tab-'+t)) t='ranking';
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected', b.dataset.tab===t));
+  document.querySelectorAll('section[id^="tab-"]').forEach(s=>s.hidden = s.id!=='tab-'+t);
+  try{ localStorage.setItem('eclipseReal.tab',t); }catch(e){}
+}
+
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+$('#rkWeek').onchange=renderRanking; $('#rkSearch').oninput=renderRanking;
+$('#cmpA').onchange=$('#cmpB').onchange=$('#cmpFilter').onchange=renderCompare;
+$('#evMember').onchange=renderEvolution;
+
+let t0='ranking'; try{ t0=localStorage.getItem('eclipseReal.tab')||'ranking'; }catch(e){} showTab(t0);
+loadAll().then(()=>{
+  const bad=files.filter(x=>!x.ok).length;
+  if(!weeks.length){ $('#statusText').innerHTML='Nenhuma semana publicada ainda. O líder sobe o JSON exportado na pasta <b>dados</b> do repositório.'; }
+  else if(bad){ $('#statusText').innerHTML=`${bad} arquivo(s) da pasta dados não puderam ser lidos. Veja a aba <b>Semanas</b>.`; }
+  else $('#statusBanner').hidden=true;
+  renderAll();
+}).catch(e=>{ $('#statusText').textContent=e.message; renderAll(); });
+})();
+</script>
+
+</body>
+</html>
