@@ -266,7 +266,7 @@ async function listFiles(t){
 async function loadAll(){
   const t=ghTarget();
   if(!t) throw new Error('Não consegui identificar o repositório. Publique pelo GitHub Pages ou preencha GH_OWNER e GH_REPO no início do script.');
-  $('#repoLink').href=`https://github.com/${t.owner}/${t.repo}/tree/${GH_BRANCH||'HEAD'}/${DATA_DIR}`; $('#repoLink').hidden=false;
+  $('#repoLink').href=`https://github.com/${t.owner}/${t.repo}/tree/${GH_BRANCH||'main'}/${DATA_DIR}`; $('#repoLink').hidden=false;
   const list=await listFiles(t);
   const loaded=await Promise.all(list.map(async f=>{
     try{
