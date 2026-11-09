@@ -391,8 +391,8 @@ function renderRanking(){
   const t=totals(w), tp=prev?totals(prev):null;
   const active=w.members.filter(m=>m.pontos>0||m.doacao>0).length;
   $('#rkStats').innerHTML =
-    statCard('Pontos da guild', fmt(t.p), tp?dHtml(t.p-tp.p, delta(tp.p,t.p).pct)+' <span class="muted">vs semana anterior</span>':'<span class="muted">primeira semana importada</span>') +
-    statCard('Doação total', fmtShort(t.d), tp?dHtml(t.d-tp.d, delta(tp.d,t.d).pct, true)+' <span class="muted">vs semana anterior</span>':'<span class="muted">'+fmt(t.d)+'</span>') +
+    statCard('Pontos da guild', fmt(t.p), tp?dHtml(t.p-tp.p, delta(tp.p,t.p).pct)+' <span class="muted">comparado à semana anterior</span>':'<span class="muted">primeira semana importada</span>') +
+    statCard('Doação total', fmtShort(t.d), tp?dHtml(t.d-tp.d, delta(tp.d,t.d).pct, true)+' <span class="muted">comparado à semana anterior</span>':'<span class="muted">'+fmt(t.d)+'</span>') +
     statCard('Membros ativos', `${active}<span class="muted" style="font-size:16px"> / ${w.members.length}</span>`, '<span class="muted">com pontos ou doação na semana</span>');
   const pod=(key,el,short)=>{ const top=w.members.slice().sort((a,b)=>b[key]-a[key]).slice(0,5); const max=top[0]?.[key]||1;
     el.innerHTML = top.map((m,i)=>`<div class="pod p${i+1}"><div class="pos">${i+1}º</div><div style="min-width:0"><div class="name">${esc(m.nome)}</div><div class="bar"><i style="width:${Math.max(2,m[key]/max*100)}%"></i></div></div><div class="val">${short?fmtShort(m[key]):fmt(m[key])}</div></div>`).join(''); };
