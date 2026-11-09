@@ -119,13 +119,12 @@ pre.code{background:var(--surface-2);border:1px solid var(--line);border-radius:
   padding:14px 12px 14px 14px;padding-right:max(12px,env(safe-area-inset-right,0px));background:#5865F2;color:#fff;text-decoration:none;
   border-radius:12px 0 0 12px;box-shadow:0 6px 24px rgba(88,101,242,.45);font-family:var(--display);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;
   writing-mode:vertical-rl;transition:padding .15s,filter .15s}
-.discord svg{width:22px;height:22px;flex:none;transform:rotate(90deg)}
+.discord img{width:24px;height:24px;flex:none;border-radius:6px;display:block}
 .discord:hover{filter:brightness(1.1);padding-left:18px}
 .discord:focus-visible{outline:2px solid #fff;outline-offset:-4px}
 @media (max-width:760px){
   .discord{top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:max(16px,env(safe-area-inset-right,0px));transform:none;writing-mode:horizontal-tb;
     border-radius:999px;padding:12px 16px}
-  .discord svg{transform:none}
   .wrap{padding-bottom:90px}
 }
 </style>
@@ -140,7 +139,7 @@ pre.code{background:var(--surface-2);border:1px solid var(--line);border-radius:
       <h1>Eclipse <span>Real</span></h1>
       <p class="sub">Ranking semanal de pontos e doações da guild</p>
     </div>
-    <div class="weekpill" id="weekInfo"></div>
+    <div class="row"><div class="weekpill" id="weekInfo"></div><button class="btn ghost" id="refreshBtn" title="Buscar semanas novas no GitHub">Atualizar</button></div>
   </header>
 
   <nav class="tabs" role="tablist">
@@ -238,7 +237,7 @@ pre.code{background:var(--surface-2);border:1px solid var(--line);border-radius:
 </div>
 
 <a class="discord" href="https://discord.gg/wQgF9Jspz" target="_blank" rel="noopener" aria-label="Entrar no Discord da guild Eclipse Real">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+  <img src="data:image/png;base64,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" alt="" width="24" height="24">
   <span>Discord da guild</span>
 </a>
 
@@ -257,7 +256,7 @@ const GH_OWNER = '';
 const GH_REPO  = '';
 const GH_BRANCH = '';      // vazio = branch padrão do repositório
 const DATA_DIR = 'dados';
-const CACHE_MIN = 5;       // minutos que a lista de arquivos fica em cache (economiza o limite da API)
+const CACHE_MIN = 1;       // minutos que a lista de arquivos fica em cache (economiza o limite da API)
 
 let weeks = [];
 let files = [];
@@ -275,7 +274,7 @@ async function listFiles(t){
   const ck='eclipseReal.files.'+t.owner+'/'+t.repo;
   try{ const c=JSON.parse(localStorage.getItem(ck)||'null'); if(c && Date.now()-c.at < CACHE_MIN*60000) return c.list; }catch(e){}
   const url=`https://api.github.com/repos/${t.owner}/${t.repo}/contents/${DATA_DIR}${GH_BRANCH?'?ref='+GH_BRANCH:''}`;
-  const r=await fetch(url,{headers:{Accept:'application/vnd.github+json'}});
+  const r=await fetch(url,{headers:{Accept:'application/vnd.github+json'},cache:'no-store'});
   if(r.status===404) throw new Error(`Não achei a pasta "${DATA_DIR}" no repositório ${t.owner}/${t.repo}.`);
   if(r.status===403||r.status===429) throw new Error('O GitHub limitou as consultas deste IP por alguns minutos (limite de 60 por hora). Tente de novo daqui a pouco.');
   if(!r.ok) throw new Error('Falha ao consultar o GitHub ('+r.status+').');
@@ -565,6 +564,7 @@ $('#rkWeek').onchange=renderRanking; $('#rkSearch').oninput=renderRanking;
 $('#cmpA').onchange=$('#cmpB').onchange=$('#cmpFilter').onchange=renderCompare;
 $('#evMember').onchange=renderEvolution;
 
+$('#refreshBtn').onclick=()=>{ try{ Object.keys(localStorage).filter(k=>k.startsWith('eclipseReal.files.')).forEach(k=>localStorage.removeItem(k)); }catch(e){} location.reload(); };
 let t0='ranking'; try{ t0=localStorage.getItem('eclipseReal.tab')||'ranking'; }catch(e){} showTab(t0);
 loadAll().then(()=>{
   const bad=files.filter(x=>!x.ok).length;
